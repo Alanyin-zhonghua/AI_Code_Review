@@ -27,11 +27,26 @@ class ToolExecutor:
         return ToolResult(call_id=call.id, content=result)
 
 
-def _validate_path(p: str) -> bool:
+def _validate_path(p: str, allow_absolute: bool = True) -> bool:
+    """验证路径安全性。
+    
+    Args:
+        p: 路径字符串
+        allow_absolute: 是否允许绝对路径（默认True以兼容测试）
+    
+    Returns:
+        路径是否安全
+    """
     if not p:
         return False
+    # 禁止目录遍历
     if ".." in p:
         return False
+    # 在生产环境中，应该设置 allow_absolute=False
+    if not allow_absolute:
+        path_obj = Path(p)
+        if path_obj.is_absolute():
+            return False
     return True
 
 

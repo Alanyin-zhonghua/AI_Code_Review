@@ -208,7 +208,12 @@ class App:
         self.tool_out.insert(tk.END, res.content)
 
 
-if __name__ == "__main__":
+def main():
+    """启动 GUI 应用。"""
     root = tk.Tk()
     app = App(root)
     root.mainloop()
+
+
+if __name__ == "__main__":
+    main()
