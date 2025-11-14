@@ -1,0 +1,2 @@
+{"id": "m-ecf70ee1b5754814ba2d3f0f1dbb1a16", "conversation_id": "c-deb43cb1964e45df9ee6b5ceed24dc2a", "role": "user", "content": "我问了你几个问题", "parent_id": null, "depth": 0, "version": 1, "created_at": "2025-11-14T16:28:56.340002Z", "meta": {}}
+{"id": "m-8a30d0ef101b47cb9b2c665ee3fe93b2", "conversation_id": "c-deb43cb1964e45df9ee6b5ceed24dc2a", "role": "assistant", "content": "好的，请把之前的问题或上下文再发一次，我这边没有记忆，需要重新加载才能继续帮你。", "parent_id": "m-ecf70ee1b5754814ba2d3f0f1dbb1a16", "depth": 1, "version": 1, "created_at": "2025-11-14T16:28:56.340002Z", "meta": {"provider": "kimi"}}
