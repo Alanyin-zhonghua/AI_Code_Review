@@ -6,7 +6,7 @@
 
 - ✅ 支持 Git 样式的会话树结构（支持分叉对话）
 - ✅ JSON 持久化存储
-- ✅ Kimi API 集成（月之暗面）
+- ✅ 多 Provider 抽象（当前内置 GLM、Kimi，默认 GLM）
 - ✅ 只读工具系统（read_file, list_files, search_code, propose_edit）
 - ✅ 结构化日志
 - ✅ Windows 本地环境优化
@@ -40,7 +40,25 @@ pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
-编辑 `.env` 文件，设置你的 `KIMI_API_KEY`。
+编辑 `.env` 文件，设置你的 `GLM_API_KEY` 或 `KIMI_API_KEY`，例如默认使用 GLM：
+
+```env
+DEFAULT_PROVIDER=glm
+GLM_API_KEY=你的_glm_api_key
+```
+
+### 5. （可选）编写 `config.yaml`
+
+如果你希望以文件方式集中管理配置，可以在项目根目录创建 `config.yaml`，示例：
+
+```yaml
+default_provider: glm
+glm_api_key: your_api_key
+workspace_root: ./
+http_timeout: 30.0
+```
+
+`.env` 与环境变量会覆盖 `config.yaml` 中的同名字段。
 
 ## 使用
 
@@ -83,7 +101,7 @@ agent_core/
 ├── config/          # 配置管理
 ├── domain/          # 领域模型
 ├── infrastructure/  # 基础设施（存储、日志）
-├── providers/       # AI Provider 接入（Kimi）
+├── providers/       # AI Provider 接入（GLM、Kimi 等）
 ├── tools/           # 工具系统
 ├── agents/          # Agent 引擎
 ├── prompts/         # 系统提示词
@@ -101,7 +119,7 @@ agent_core/
 
 ## 技术规格
 
-详见 `agent_product_book_v_0.md` 技术规格文档。
+详见 `产品指导书.md` 技术规格文档。
 
 ## 许可
 

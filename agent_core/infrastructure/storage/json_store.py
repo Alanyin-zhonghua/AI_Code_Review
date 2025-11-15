@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 from dataclasses import asdict
 from datetime import datetime, timezone
 from pathlib import Path
@@ -22,7 +23,9 @@ class JsonConversationStore(ConversationStore):
         cdir = self._conv_root / cid
         cdir.mkdir(parents=True, exist_ok=True)
         now = datetime.now(timezone.utc)
-        conv = Conversation(id=cid, title="", agent_type=agent_type, created_at=now, updated_at=now, meta=meta)
+        meta_copy = dict(meta)
+        title = meta_copy.pop("title", meta_copy.get("projectRoot", ""))
+        conv = Conversation(id=cid, title=title, agent_type=agent_type, created_at=now, updated_at=now, meta=meta_copy)
         self._write_meta(cdir, conv)
         return conv
 
@@ -74,6 +77,12 @@ class JsonConversationStore(ConversationStore):
                 f.write(line + "\n")
             conv = self.get_conversation(message.conversation_id)
             conv.updated_at = datetime.now(timezone.utc)
+            meta_provider = message.meta.get("provider")
+            meta_model = message.meta.get("model")
+            if meta_provider:
+                conv.meta["provider"] = meta_provider
+            if meta_model:
+                conv.meta["model"] = meta_model
             self._write_meta(cdir, conv)
         except BusinessError:
             raise
@@ -108,6 +117,23 @@ class JsonConversationStore(ConversationStore):
                 continue
         items.sort(key=lambda m: m.created_at)
         return items
+
+    def delete_conversation(self, conversation_id: str) -> None:
+        cdir = self._conv_root / conversation_id
+        if not cdir.exists():
+            raise BusinessError(code="CONVERSATION_NOT_FOUND", message=conversation_id)
+        try:
+            shutil.rmtree(cdir)
+        except Exception as e:
+            raise BusinessError(code="STORE_DELETE_ERROR", message=str(e))
+
+    def update_conversation_title(self, conversation_id: str, title: str) -> None:
+        """更新会话标题。"""
+        conv = self.get_conversation(conversation_id)
+        conv.title = title
+        conv.updated_at = datetime.now(timezone.utc)
+        cdir = self._conv_root / conversation_id
+        self._write_meta(cdir, conv)
 
     def _write_meta(self, cdir: Path, conv: Conversation) -> None:
         meta_path = cdir / "meta.json"

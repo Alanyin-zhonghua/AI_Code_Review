@@ -9,7 +9,7 @@ def test_tools_basic_read_list_search_propose():
         root = Path(d)
         f = root / "a.txt"
         f.write_text("hello\nworld\nline3", encoding="utf-8")
-        te = ToolExecutor(default_tools())
+        te = ToolExecutor(default_tools(workspace_root=root, allow_absolute=True))
         rc = te.execute(ToolCall(id="1", name="read_file", arguments={"path": str(f)}))
         assert "hello" in rc.content
         lc = te.execute(ToolCall(id="2", name="list_files", arguments={"directory": str(root), "pattern": "*.txt"}))

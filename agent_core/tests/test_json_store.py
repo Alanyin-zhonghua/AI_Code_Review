@@ -27,3 +27,16 @@ def test_json_store_create_and_messages():
         msgs = store.list_messages(conv.id)
         assert len(msgs) == 1
         assert msgs[0].id == "m1"
+
+
+def test_json_store_delete_conversation():
+    with tempfile.TemporaryDirectory() as d:
+        root = Path(d) / ".storage"
+        store = JsonConversationStore(root=root)
+        conv = store.create_conversation("ide-helper", {"title": "temp"})
+        # Ensure directory exists
+        conv_dir = root / "conversations" / conv.id
+        assert conv_dir.exists()
+        store.delete_conversation(conv.id)
+        assert not conv_dir.exists()
+        assert conv.id not in {c.id for c in store.list_conversations()}

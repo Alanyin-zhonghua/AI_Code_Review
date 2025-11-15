@@ -3,12 +3,14 @@
 提供面向 IDE 的便捷接口,自动配置特定的系统提示词和参数。
 """
 
-from typing import Optional, Dict, Any, Tuple, Protocol
+from typing import Optional, Dict, Any, Tuple, Protocol, List
 
 from agent_core.agents.base_agent import AgentEngine, AgentConfig
 from agent_core.domain.conversation import ConversationStore, Conversation, MessageRecord
 from agent_core.domain.models import ChatRequest, ChatResult
-from agent_core.tools.executor import ToolExecutor
+from agent_core.tools.executor import ToolExecutor, default_tools, default_tool_defs
+from agent_core.tools.definitions import ToolDef
+from agent_core.config.settings import settings
 
 
 class ProviderClient(Protocol):
@@ -30,8 +32,10 @@ class IDEHelperAgent:
         store: ConversationStore,
         provider_client: ProviderClient,
         tool_executor: Optional[ToolExecutor] = None,
+        tool_defs: Optional[List[ToolDef]] = None,
         temperature: float = 0.3,
         enable_tools: bool = False,
+        model_name: Optional[str] = None,
     ):
         """初始化 IDE Helper Agent。
         
@@ -42,17 +46,27 @@ class IDEHelperAgent:
             temperature: 生成温度,默认 0.3（更确定性）
             enable_tools: 是否启用工具调用
         """
+        if enable_tools and tool_executor is None:
+            tool_executor = ToolExecutor(default_tools(settings.workspace_root))
+        if tool_executor and tool_defs is None:
+            tool_defs = default_tool_defs()
+
+        provider_name = getattr(provider_client, "name", None) or getattr(settings, "default_provider", "glm")
+
+        max_rounds = getattr(settings, "max_tool_rounds", 20)
         self._config = AgentConfig(
             agent_type="ide-helper",
-            provider="kimi",
-            model="ide-chat",
+            provider=provider_name,
+            model=model_name or getattr(settings, "default_model", "ide-chat"),
             enable_tools=enable_tools,
+            max_tool_rounds=max_rounds,
+            temperature=temperature,
         )
-        self._temperature = temperature
         self._engine = AgentEngine(
             store=store,
             provider_client=provider_client,
             tool_executor=tool_executor,
+            tool_defs=tool_defs,
             config=self._config,
         )
     
@@ -82,6 +96,27 @@ class IDEHelperAgent:
             message_meta["file_path"] = file_path
         
         return self._engine.run_step(
+            conversation_id=conversation_id,
+            user_input=user_input,
+            meta=message_meta,
+            focus_message_id=focus_message_id,
+        )
+
+    def chat_stream(
+        self,
+        user_input: str,
+        conversation_id: Optional[str] = None,
+        focus_message_id: Optional[str] = None,
+        file_path: Optional[str] = None,
+        **meta,
+    ):
+        """以流式方式发起对话，返回事件迭代器。"""
+
+        message_meta = dict(meta)
+        if file_path:
+            message_meta["file_path"] = file_path
+
+        return self._engine.run_step_stream(
             conversation_id=conversation_id,
             user_input=user_input,
             meta=message_meta,

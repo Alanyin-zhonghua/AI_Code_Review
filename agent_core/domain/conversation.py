@@ -45,3 +45,6 @@ class ConversationStore(Protocol):
 
     def list_messages(self, conversation_id: str) -> List[MessageRecord]:
         ...
+
+    def delete_conversation(self, conversation_id: str) -> None:
+        ...
