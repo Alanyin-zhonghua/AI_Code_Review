@@ -1,0 +1,26 @@
+# Bandit 安全扫描配置
+# 文档: https://bandit.readthedocs.io/
+
+[bandit]
+# 要扫描的路径
+targets = ["agent_core"]
+
+# 排除的路径
+exclude_dirs = [
+    "/tests/",
+    "/venv/",
+    "/.venv/",
+    "/__pycache__/"
+]
+
+# 跳过的测试（test ID）
+skips = [
+    "B101",  # assert_used - 测试中合理使用
+    "B601",  # paramiko_calls - 我们不用 SSH
+]
+
+# 严重性级别：LOW, MEDIUM, HIGH
+severity = "MEDIUM"
+
+# 置信度级别：LOW, MEDIUM, HIGH
+confidence = "MEDIUM"

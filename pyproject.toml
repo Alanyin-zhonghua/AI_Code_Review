@@ -1,0 +1,31 @@
+[tool.mypy]
+# Python 版本
+python_version = "3.12"
+
+# 基本配置
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false  # 先设为 false，逐步加严
+disallow_any_unimported = false
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+# 第三方库配置
+[[tool.mypy.overrides]]
+module = [
+    "httpx.*",
+    "langgraph.*",
+    "pydantic.*",
+]
+ignore_missing_imports = true
+
+# 排除目录
+exclude = [
+    "venv/",
+    "tests/",
+    ".pytest_cache/",
+]
