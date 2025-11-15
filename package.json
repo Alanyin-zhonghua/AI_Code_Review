@@ -1,0 +1,38 @@
+{
+  "name": "ai-code-review",
+  "version": "1.0.0",
+  "description": "Multi-language AI-powered code review system with static analysis",
+  "private": true,
+  "scripts": {
+    "lint:js": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "lint:js:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
+    "lint:style": "stylelint '**/*.{css,scss,sass,less}'",
+    "lint:style:fix": "stylelint '**/*.{css,scss,sass,less}' --fix",
+    "lint:all": "npm run lint:js && npm run lint:style",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,scss,md,yaml,yml}'",
+    "format:check": "prettier --check '**/*.{js,jsx,ts,tsx,json,css,scss,md,yaml,yml}'"
+  },
+  "keywords": [
+    "code-review",
+    "static-analysis",
+    "ai",
+    "multi-language",
+    "linting"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.18.1",
+    "@typescript-eslint/parser": "^8.18.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.31.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react": "^7.37.2",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "prettier": "^3.4.2",
+    "stylelint": "^16.12.0",
+    "stylelint-config-standard": "^36.0.1",
+    "typescript": "^5.7.2"
+  }
+}
